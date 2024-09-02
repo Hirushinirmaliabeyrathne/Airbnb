@@ -1,4 +1,5 @@
 import { Suspense, use } from "react";
+
 import { MapFilterItems } from "./Components/MapFilterItems";
 import prisma from "./lib/db";
 import { SkeltonCard } from "./Components/SkeltonCard";

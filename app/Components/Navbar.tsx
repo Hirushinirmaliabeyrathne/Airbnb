@@ -3,7 +3,7 @@ import Link from "next/link";
 import DesktopLogo from "../../public/airbnb-desktop.png";
 import MobileLogo from "../../public/airbnb-mobile.webp"
 import { UserNav } from "./UserNav";
-
+import { SearchCompnent } from "./SearchComponent";
 
 
 
@@ -23,7 +23,8 @@ export function Navbar() {
             className="block lg:hidden w-12"
           />
         </Link>
-        
+          
+          <SearchCompnent/>
         <UserNav/>
       </div>
     </nav>
