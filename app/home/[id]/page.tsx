@@ -10,13 +10,12 @@ import { Separator } from "@/components/ui/separator";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation"; // Added to handle 404
 
+// Fetching data for the home with the given ID
 export async function getData(homeId: string) {
-
   const data = await prisma.home.findUnique({
-    where: {
-      id: homeId,
-    },
+    where: { id: homeId },
     select: {
       photo: true,
       description: true,
@@ -28,9 +27,7 @@ export async function getData(homeId: string) {
       price: true,
       country: true,
       Reservation: {
-        where: {
-          homeId: homeId,
-        },
+        where: { homeId: homeId },
         select: {
           id: true,
           startDate: true,
@@ -49,29 +46,37 @@ export async function getData(homeId: string) {
   return data;
 }
 
-export default async function HomeRoute({params,
-
-}:{
-  params: {id: string }
-
-})
-  {
+export default async function HomeRoute({
+  params,
+}: {
+  params: { id: string };
+}) {
   const data = await getData(params.id);
-  const {getCountryByValue} = useCountries()
+  
+  // Handle case where data is not found
+  if (!data) {
+    notFound();
+  }
+
+  const { getCountryByValue } = useCountries();
   const country = getCountryByValue(data?.country as string);
-  const {getUser} = getKindeServerSession()
+
+  const { getUser } = getKindeServerSession();
   const user = await getUser();
-  return(
+
+  return (
     <div className="w-[75%] mx-auto mt-10 m-12">
-      <h1 className="font-medium text-2xl mb-5">
-        {data?.title}
-      </h1>
+      <h1 className="font-medium text-2xl mb-5">{data?.title}</h1>
+
       <div className="relative h-[550px]">
-        <Image alt="Image of Home" src={`https://alwgjmvvdfyxekdtbpcg.supabase.co/storage/v1/object/public/images/${data?.photo}`}
-        fill
-        className="rounded-lg h-full object-cover w-full"
+        <Image
+          alt="Image of Home"
+          src={`https://alwgjmvvdfyxekdtbpcg.supabase.co/storage/v1/object/public/images/${data?.photo}`}
+          fill
+          className="rounded-lg h-full object-cover w-full"
         />
       </div>
+
       <div className="flex justify-between gap-x-24 mt-8">
         <div className="w-2/3">
           <h3 className="text-xl font-medium">
@@ -84,47 +89,50 @@ export default async function HomeRoute({params,
           </div>
 
           <div className="flex items-center mt-6">
-            <img src={data?.User?.profileImage ??
-              "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
-            }
-            alt="User Profile"
-            className="w-11 h-11 rounded-full "
+            <img
+              src={
+                data?.User?.profileImage ??
+                "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"
+              }
+              alt="User Profile"
+              className="w-11 h-11 rounded-full "
             />
             <div className="flex flex-col ml-4">
-              <h3 className="font-medium">
-                {data?.User?.firstName}
-              </h3>
+              <h3 className="font-medium">{data?.User?.firstName}</h3>
               <p className="text-sm text-muted-foreground">Host since 2015</p>
             </div>
           </div>
-          <Separator className="m-7"/>
 
-          <CategoryShowcase categoryName={data?.categoryName as string}/>
+          <Separator className="m-7" />
 
-          <Separator className="m-7"/>
+          <CategoryShowcase categoryName={data?.categoryName as string} />
+
+          <Separator className="m-7" />
 
           <p className="text-muted-foreground">{data?.description}</p>
 
-          <Separator className="m-7"/>
+          <Separator className="m-7" />
 
-          <HomeMap locationValue={country?.value as string}/>
+          <HomeMap locationValue={country?.value as string} />
         </div>
 
         <form action={createReservation}>
-          <input type="hidden" name="homeId" value={params.id}/>
-          <input type="hidden" name="userId" value={user?.id}/>
+          <input type="hidden" name="homeId" value={params.id} />
+          <input type="hidden" name="userId" value={user?.id} />
 
-          <SelectCalender reservation={undefined}/>
+          <SelectCalender reservation={undefined} />
 
           {user?.id ? (
-              <div></div>
-          ): (
-              <Button className="w-full" asChild>
-                <Link href="/api/auth/login">Make a Reservation</Link>
-              </Button>
+            <Button className="w-full" type="submit">
+              Make a Reservation
+            </Button>
+          ) : (
+            <Button className="w-full" asChild>
+              <Link href="/api/auth/login">Login to Make a Reservation</Link>
+            </Button>
           )}
         </form>
       </div>
     </div>
-  )
+  );
 }
