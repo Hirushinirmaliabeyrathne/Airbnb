@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { createReservation } from "@/app/action";
-import { CategoryShowcase } from "@/app/Components/CategoryShowcase";
+import { CategoryShowcase} from "@/app/Components/CategoryShowcase";
 import { HomeMap } from "@/app/Components/HomeMap";
 import { SelectCalender } from "@/app/Components/SelectCalander";
 import { ReservationSubmitButton } from "@/app/Components/Submitbutton";
@@ -65,7 +65,7 @@ export default async function HomeRoute({
       <div className="relative h-[550px]">
         <Image
           alt="Image of Home"
-          src={`https://glvmmupiqwlmhicmggqp.supabase.co/storage/v1/object/public/images/${data?.photo}`}
+          src={`https://alwgjmvvdfyxekdtbpcg.supabase.co/storage/v1/object/public/images/${data?.photo}`}
           fill
           className="rounded-lg h-full object-cover w-full"
         />
